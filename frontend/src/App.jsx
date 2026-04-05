@@ -15,7 +15,7 @@ export default function App() {
     setError(null)
     setResult(null)
     try {
-      const response = await axios.post("http://127.0.0.1:8000/analyze", {
+      const response = await axios.post("https://safegen-ai-backend.onrender.com/analyze", {
         text, policy, role
       })
       setResult(response.data)

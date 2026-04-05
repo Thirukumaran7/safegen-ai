@@ -20,8 +20,8 @@ export default function LogTable() {
   const loadData = async () => {
     try {
       const [logsRes, statsRes] = await Promise.all([
-        axios.get("http://127.0.0.1:8000/logs"),
-        axios.get("http://127.0.0.1:8000/stats")
+        axios.get("https://safegen-ai-backend.onrender.com/logs"),
+        axios.get("https://safegen-ai-backend.onrender.com/stats")
       ])
       setLogs(logsRes.data)
       setStats(statsRes.data)
