@@ -1,0 +1,6 @@
+venv/
+__pycache__/
+*.pyc
+.env
+safegen.db
+ml/intent_model.pkl
