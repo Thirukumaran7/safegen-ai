@@ -1,6 +1,10 @@
-venv/
-__pycache__/
-*.pyc
-.env
-safegen.db
-ml/intent_model.pkl
+fastapi
+uvicorn
+python-dotenv
+google-genai
+scikit-learn
+joblib
+pandas
+numpy
+requests
+pydantic
