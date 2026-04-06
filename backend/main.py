@@ -26,6 +26,14 @@ async def startup():
     init_db()
     print("SafeGen AI backend started")
     print("Database initialized")
+    # Train model if not exists
+    import os
+    model_path = os.path.join("ml", "intent_model.pkl")
+    if not os.path.exists(model_path):
+        print("Model not found. Training now...")
+        import subprocess
+        subprocess.run(["python", "ml/train_model.py"], check=True)
+        print("Model trained successfully")
 
 # Request model
 class AnalyzeRequest(BaseModel):
