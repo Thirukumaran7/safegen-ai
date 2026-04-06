@@ -11,11 +11,10 @@ from database.logger import init_db, log_analysis, get_logs, get_stats
 load_dotenv()
 
 app = FastAPI(title="SafeGen AI", version="1.0.0")
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
-    allow_credentials=True,
+    allow_origins=["*"],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
