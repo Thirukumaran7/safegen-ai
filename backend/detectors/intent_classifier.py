@@ -28,7 +28,18 @@ INJECTION_PATTERNS = [
     "new instructions",
     "your true self",
     "forget everything",
+    "system prompt",
+    "ignore safety",
+    "disable safety",
+    "bypass filters",
+    "remove restrictions",
 ]
+
+THREAT_CATEGORY_MAP = {
+    "malicious":   "Malicious Intent",
+    "suspicious":  "Suspicious Activity",
+    "benign":      "Safe Request",
+}
 
 MODEL_PATH = os.path.join(os.path.dirname(__file__), "..", "ml", "intent_model.pkl")
 _pipeline = None
@@ -57,11 +68,12 @@ def classify_intent(text: str) -> dict:
     pipeline = load_model()
 
     if pipeline is None:
-        # Fallback if model not trained yet
         score = 8.5 if injection_detected else 2.0
+        label = "malicious" if injection_detected else "benign"
         return {
             "score": score,
-            "label": "malicious" if injection_detected else "benign",
+            "label": label,
+            "threat_category": THREAT_CATEGORY_MAP.get(label, "Unknown"),
             "confidence": 0.8,
             "probabilities": {},
             "injection_detected": injection_detected,
@@ -77,12 +89,10 @@ def classify_intent(text: str) -> dict:
         prob_dict = {cls: round(float(p), 3) for cls, p in zip(classes, proba)}
         confidence = float(max(proba))
 
-        # Injection overrides ML label
         if injection_detected:
             label = "malicious"
             confidence = max(confidence, 0.92)
 
-        # Map label to base score
         base_scores = {
             "benign":     1.5,
             "suspicious": 5.0,
@@ -90,7 +100,6 @@ def classify_intent(text: str) -> dict:
         }
         base = base_scores.get(label, 5.0)
 
-        # Adjust by confidence
         if label == "malicious":
             score = base + (confidence - 0.5) * 3.0
         elif label == "benign":
@@ -98,7 +107,6 @@ def classify_intent(text: str) -> dict:
         else:
             score = base
 
-        # Injection always pushes score high
         if injection_detected:
             score = max(score, 8.5)
 
@@ -107,6 +115,7 @@ def classify_intent(text: str) -> dict:
         return {
             "score": score,
             "label": label,
+            "threat_category": THREAT_CATEGORY_MAP.get(label, "Unknown"),
             "confidence": round(confidence, 3),
             "probabilities": prob_dict,
             "injection_detected": injection_detected,
@@ -118,6 +127,7 @@ def classify_intent(text: str) -> dict:
         return {
             "score": 5.0,
             "label": "suspicious",
+            "threat_category": "Suspicious Activity",
             "confidence": 0.5,
             "probabilities": {},
             "injection_detected": injection_detected,
