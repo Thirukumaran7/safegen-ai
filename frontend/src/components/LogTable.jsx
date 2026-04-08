@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import axios from "axios"
 
-const BACKEND_URL = "http://127.0.0.1:8000"
+const BACKEND_URL = "https://safegen-ai-backend.onrender.com"
 
 const DECISION_COLORS = {
   ALLOW:    "#68d391",
