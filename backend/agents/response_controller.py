@@ -17,8 +17,8 @@ def generate_response(display_text, decision, policy, role, explanation):
     system_prompt = SYSTEM_PROMPTS.get(decision, SYSTEM_PROMPTS["RESTRICT"])
     full_prompt = f"{system_prompt}\n\nUser role: {role}\nPolicy level: {policy}\n\nUser message: {display_text}"
     try:
-        response = client.models.generate_content(model="gemini-2.0-flash-lite", contents=full_prompt)
-        return {"response": response.text, "model": "gemini-2.0-flash-lite", "success": True}
+        response = client.models.generate_content(model="gemini-2.5-flash", contents=full_prompt)
+        return {"response": response.text, "model": "gemini-2.5-flash", "success": True}
     except Exception as e:
         print(f"GEMINI ERROR: {e}")
         fallback = {"ALLOW": "I am happy to help.", "RESTRICT": "I can provide general information only.", "REDACT": "I can help with the general question.", "BLOCK": "I am unable to help with this request."}
