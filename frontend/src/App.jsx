@@ -4,17 +4,17 @@ const BACKEND = "https://safegen-ai-backend.onrender.com";
 
 // ─── CONSTANTS ────────────────────────────────────────────────────────────────
 const DECISION_META = {
-  ALLOW:    { color: "#10b981", bg: "#052e16", glow: "#10b98133", icon: "✓", label: "Allowed" },
-  RESTRICT: { color: "#f59e0b", bg: "#292007", glow: "#f59e0b33", icon: "⚠", label: "Restricted" },
-  REDACT:   { color: "#38bdf8", bg: "#072030", glow: "#38bdf833", icon: "◉", label: "Redacted" },
-  BLOCK:    { color: "#f43f5e", bg: "#2d0614", glow: "#f43f5e33", icon: "✕", label: "Blocked" },
+  ALLOW:    { color: "#10b981", bg: "var(--dm-allow)",    glow: "#10b98133", icon: "✓", label: "Allowed" },
+  RESTRICT: { color: "#f59e0b", bg: "var(--dm-restrict)", glow: "#f59e0b33", icon: "⚠", label: "Restricted" },
+  REDACT:   { color: "#38bdf8", bg: "var(--dm-redact)",   glow: "#38bdf833", icon: "◉", label: "Redacted" },
+  BLOCK:    { color: "#f43f5e", bg: "var(--dm-block)",    glow: "#f43f5e33", icon: "✕", label: "Blocked" },
 };
 
 const SEVERITY_META = {
-  Critical: { color: "#f43f5e", bg: "#2d0614" },
-  High:     { color: "#f97316", bg: "#2a1000" },
-  Medium:   { color: "#f59e0b", bg: "#292007" },
-  Low:      { color: "#10b981", bg: "#052e16" },
+  Critical: { color: "#f43f5e", bg: "var(--sev-critical)" },
+  High:     { color: "#f97316", bg: "var(--sev-high)" },
+  Medium:   { color: "#f59e0b", bg: "var(--sev-medium)" },
+  Low:      { color: "#10b981", bg: "var(--sev-low)" },
 };
 
 const MALWARE_ICONS = {
@@ -58,13 +58,13 @@ function GlowBar({ label, value, color, max = 10, delay = 0 }) {
   return (
     <div style={{ marginBottom: 14 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 5 }}>
-        <span style={{ fontSize: 12, color: "#94a3b8", fontFamily: "'JetBrains Mono', monospace" }}>{label}</span>
+        <span style={{ fontSize: 12, color: "var(--c-muted)", fontFamily: "'JetBrains Mono', monospace" }}>{label}</span>
         <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
           <span style={{ fontSize: 13, color, fontWeight: 800, fontFamily: "'JetBrains Mono', monospace" }}>{fmt(value)}</span>
-          <span style={{ fontSize: 10, color: "#475569" }}>/ 10</span>
+          <span style={{ fontSize: 10, color: "var(--c-faint)" }}>/ 10</span>
         </div>
       </div>
-      <div style={{ height: 8, background: "#0f172a", borderRadius: 4, overflow: "hidden", position: "relative" }}>
+      <div style={{ height: 8, background: "var(--c-track)", borderRadius: 4, overflow: "hidden", position: "relative" }}>
         <div style={{
           position: "absolute", top: 0, left: 0, height: "100%",
           width: `${w}%`, background: `linear-gradient(90deg, ${color}88, ${color})`,
@@ -84,7 +84,7 @@ function RingScore({ value, decision }) {
   return (
     <div style={{ position: "relative", width: 100, height: 100, flexShrink: 0 }}>
       <svg width="100" height="100" style={{ transform: "rotate(-90deg)" }}>
-        <circle cx="50" cy="50" r={r} fill="none" stroke="#1e293b" strokeWidth="8" />
+        <circle cx="50" cy="50" r={r} fill="none" stroke="var(--c-track)" strokeWidth="8" />
         <circle cx="50" cy="50" r={r} fill="none" stroke={meta.color} strokeWidth="8"
           strokeDasharray={circ} strokeDashoffset={dash}
           strokeLinecap="round"
@@ -92,7 +92,7 @@ function RingScore({ value, decision }) {
       </svg>
       <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
         <span style={{ fontSize: 20, fontWeight: 900, color: meta.color, fontFamily: "'JetBrains Mono', monospace", lineHeight: 1 }}>{fmt(value)}</span>
-        <span style={{ fontSize: 9, color: "#475569", marginTop: 2 }}>/ 10</span>
+        <span style={{ fontSize: 9, color: "var(--c-faint)", marginTop: 2 }}>/ 10</span>
       </div>
     </div>
   );
@@ -101,14 +101,15 @@ function RingScore({ value, decision }) {
 function StatCard({ icon, label, value, color, sub }) {
   return (
     <div style={{
-      background: "#080d18", border: "1px solid #1e293b", borderRadius: 14,
+      background: "var(--c-card2)", border: "1px solid var(--c-border)", borderRadius: 14,
       padding: "18px 20px", flex: 1, minWidth: 130,
-      borderTop: `3px solid ${color}`, position: "relative", overflow: "hidden"
+      borderTop: `3px solid ${color}`, position: "relative", overflow: "hidden",
+      boxShadow: "var(--card-shadow)"
     }}>
       <div style={{ position: "absolute", top: 14, right: 16, fontSize: 22, opacity: 0.15 }}>{icon}</div>
-      <div style={{ fontSize: 11, color: "#475569", textTransform: "uppercase", letterSpacing: 1.5, marginBottom: 6 }}>{label}</div>
+      <div style={{ fontSize: 11, color: "var(--c-faint)", textTransform: "uppercase", letterSpacing: 1.5, marginBottom: 6 }}>{label}</div>
       <div style={{ fontSize: 28, fontWeight: 900, color, fontFamily: "'JetBrains Mono', monospace", lineHeight: 1 }}>{value}</div>
-      {sub && <div style={{ fontSize: 10, color: "#334155", marginTop: 4 }}>{sub}</div>}
+      {sub && <div style={{ fontSize: 10, color: "var(--c-dimmer)", marginTop: 4 }}>{sub}</div>}
     </div>
   );
 }
@@ -135,7 +136,7 @@ function ThreatTimeline({ logs }) {
 
 function DonutChart({ data }) {
   const total = data.reduce((s, d) => s + d.value, 0);
-  if (!total) return <div style={{ textAlign: "center", color: "#334155", fontSize: 13 }}>No data yet</div>;
+  if (!total) return <div style={{ textAlign: "center", color: "var(--c-dimmer)", fontSize: 13 }}>No data yet</div>;
   let offset = 0;
   const r = 50, circ = 2 * Math.PI * r;
   const slices = data.map(d => {
@@ -148,7 +149,7 @@ function DonutChart({ data }) {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
       <svg width="120" height="120" style={{ transform: "rotate(-90deg)", flexShrink: 0 }}>
-        <circle cx="60" cy="60" r={r} fill="none" stroke="#0f172a" strokeWidth="18" />
+        <circle cx="60" cy="60" r={r} fill="none" stroke="var(--c-track)" strokeWidth="18" />
         {slices.map((s, i) => s.value > 0 && (
           <circle key={i} cx="60" cy="60" r={r} fill="none"
             stroke={s.color} strokeWidth="18"
@@ -162,11 +163,11 @@ function DonutChart({ data }) {
           <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
               <div style={{ width: 10, height: 10, borderRadius: 2, background: d.color, boxShadow: `0 0 6px ${d.color}` }} />
-              <span style={{ fontSize: 12, color: "#94a3b8" }}>{d.label}</span>
+              <span style={{ fontSize: 12, color: "var(--c-muted)" }}>{d.label}</span>
             </div>
             <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
               <span style={{ fontSize: 13, fontWeight: 700, color: d.color, fontFamily: "'JetBrains Mono', monospace" }}>{d.value}</span>
-              <span style={{ fontSize: 10, color: "#334155" }}>{total ? Math.round((d.value / total) * 100) : 0}%</span>
+              <span style={{ fontSize: 10, color: "var(--c-dimmer)" }}>{total ? Math.round((d.value / total) * 100) : 0}%</span>
             </div>
           </div>
         ))}
@@ -188,18 +189,18 @@ function ConfigMatrix({ activeRole, activePolicy }) {
       <div style={{ display: "grid", gridTemplateColumns: `80px repeat(3, 1fr)`, gap: 4 }}>
         <div />
         {policies.map(p => (
-          <div key={p} style={{ textAlign: "center", fontSize: 10, color: "#475569", textTransform: "uppercase", letterSpacing: 1, padding: "4px 0" }}>{p}</div>
+          <div key={p} style={{ textAlign: "center", fontSize: 10, color: "var(--c-faint)", textTransform: "uppercase", letterSpacing: 1, padding: "4px 0" }}>{p}</div>
         ))}
         {roles.map(role => (
           <>
-            <div key={role} style={{ fontSize: 10, color: "#475569", textTransform: "uppercase", letterSpacing: 1, display: "flex", alignItems: "center" }}>{role}</div>
+            <div key={role} style={{ fontSize: 10, color: "var(--c-faint)", textTransform: "uppercase", letterSpacing: 1, display: "flex", alignItems: "center" }}>{role}</div>
             {policies.map(pol => {
               const isActive = role === activeRole && pol === activePolicy;
               const [allow, block] = thresholds[role][pol];
               return (
                 <div key={pol} style={{
-                  background: isActive ? "#1e293b" : "#080d18",
-                  border: `1px solid ${isActive ? "#3b82f6" : "#1e293b"}`,
+                  background: isActive ? "var(--c-active)" : "var(--c-card2)",
+                  border: `1px solid ${isActive ? "#3b82f6" : "var(--c-border)"}`,
                   borderRadius: 8, padding: "8px 6px", textAlign: "center",
                   boxShadow: isActive ? "0 0 12px #3b82f633" : "none",
                   transition: "all 0.3s"
@@ -212,7 +213,7 @@ function ConfigMatrix({ activeRole, activePolicy }) {
           </>
         ))}
       </div>
-      <div style={{ display: "flex", gap: 12, marginTop: 10, fontSize: 10, color: "#334155" }}>
+      <div style={{ display: "flex", gap: 12, marginTop: 10, fontSize: 10, color: "var(--c-dimmer)" }}>
         <span>🟢 allow threshold</span>
         <span>🔴 block threshold</span>
       </div>
@@ -221,7 +222,8 @@ function ConfigMatrix({ activeRole, activePolicy }) {
 }
 
 // ─── MAIN APP ─────────────────────────────────────────────────────────────────
-export default function AppV3() {
+export default function App() {
+  const [dark, setDark] = useState(true);
   const [view, setView] = useState("analyze");
   const [tab, setTab] = useState("text");
   const [text, setText] = useState("");
@@ -229,7 +231,7 @@ export default function AppV3() {
   const [role, setRole] = useState("general");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
-  const [history, setHistory] = useState([]); // session history
+  const [history, setHistory] = useState([]);
   const [logs, setLogs] = useState([]);
   const [stats, setStats] = useState(null);
   const [feedbackStats, setFeedbackStats] = useState(null);
@@ -239,13 +241,17 @@ export default function AppV3() {
   const [imgPrev, setImgPrev] = useState(null);
   const [docFile, setDocFile] = useState(null);
   const [showMatrix, setShowMatrix] = useState(false);
-  const [compareMode, setCompareMode] = useState(false);
   const [compareResults, setCompareResults] = useState([]);
   const [comparing, setComparing] = useState(false);
   const [activeHistIdx, setActiveHistIdx] = useState(null);
+  const [backendReady, setBackendReady] = useState(false);
   const imgRef = useRef();
   const docRef = useRef();
   const resultRef = useRef();
+
+  useEffect(() => {
+    fetch(`${BACKEND}/health`).then(r => r.json()).then(() => setBackendReady(true)).catch(() => {});
+  }, []);
 
   useEffect(() => {
     if (view === "dashboard") fetchDashboard();
@@ -341,7 +347,7 @@ export default function AppV3() {
   }
 
   const dm = result ? (DECISION_META[result.decision] || DECISION_META.ALLOW) : null;
-  const sc = result?.score_contributions || {};
+  const sc = result?.score_contributions || result?.contributions || {};
   const donutData = stats ? [
     { label: "Blocked",    value: stats.block_count    || 0, color: "#f43f5e" },
     { label: "Redacted",   value: stats.redact_count   || 0, color: "#38bdf8" },
@@ -356,18 +362,91 @@ export default function AppV3() {
   ];
 
   return (
-    <div style={{ minHeight: "100vh", background: "#04080f", color: "#e2e8f0", fontFamily: "'DM Sans', 'Segoe UI', sans-serif" }}>
+    <div data-theme={dark ? "dark" : "light"} style={{ minHeight: "100vh", background: "var(--c-bg)", color: "var(--c-text)", fontFamily: "'DM Sans', 'Segoe UI', sans-serif", transition: "background 0.3s, color 0.3s" }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=DM+Sans:wght@400;500;600;700;800&display=swap');
+
+        /* ── DARK THEME (default) ── */
+        [data-theme="dark"] {
+          --c-bg:       #04080f;
+          --c-nav:      #060b14;
+          --c-card:     #060b14;
+          --c-card2:    #080d18;
+          --c-input:    #080d18;
+          --c-border:   #1e293b;
+          --c-border2:  #0f172a;
+          --c-text:     #e2e8f0;
+          --c-muted:    #94a3b8;
+          --c-faint:    #475569;
+          --c-dimmer:   #334155;
+          --c-track:    #0f172a;
+          --c-active:   #1e293b;
+          --c-hover:    #0a1020;
+          --c-rowA:     #04080f;
+          --c-rowB:     #060b14;
+          --c-response: #cbd5e1;
+          --card-shadow: 0 4px 24px #00000044;
+          --dm-allow:    #052e16;
+          --dm-restrict: #292007;
+          --dm-redact:   #072030;
+          --dm-block:    #2d0614;
+          --sev-critical: #2d0614;
+          --sev-high:     #2a1000;
+          --sev-medium:   #292007;
+          --sev-low:      #052e16;
+          --pii-tag-bg:   #1a1400;
+          --pii-tag-border: #f59e0b33;
+          --inject-bg:    #2d0614;
+          --fb-yes-bg:    #052e16;
+          --fb-no-bg:     #2d0614;
+          --reason-bg:    #080d18;
+        }
+
+        /* ── LIGHT THEME ── */
+        [data-theme="light"] {
+          --c-bg:       #f0f4ff;
+          --c-nav:      #ffffff;
+          --c-card:     #ffffff;
+          --c-card2:    #f8faff;
+          --c-input:    #eef2ff;
+          --c-border:   #c7d2fe;
+          --c-border2:  #dde4ff;
+          --c-text:     #1e1b4b;
+          --c-muted:    #4338ca;
+          --c-faint:    #6366f1;
+          --c-dimmer:   #818cf8;
+          --c-track:    #e0e7ff;
+          --c-active:   #e0e7ff;
+          --c-hover:    #eef2ff;
+          --c-rowA:     #ffffff;
+          --c-rowB:     #f8faff;
+          --c-response: #312e81;
+          --card-shadow: 0 2px 12px #6366f122;
+          --dm-allow:    #dcfce7;
+          --dm-restrict: #fef9c3;
+          --dm-redact:   #e0f2fe;
+          --dm-block:    #ffe4e6;
+          --sev-critical: #ffe4e6;
+          --sev-high:     #ffedd5;
+          --sev-medium:   #fef9c3;
+          --sev-low:      #dcfce7;
+          --pii-tag-bg:   #fef9c3;
+          --pii-tag-border: #f59e0b66;
+          --inject-bg:    #ffe4e6;
+          --fb-yes-bg:    #dcfce7;
+          --fb-no-bg:     #ffe4e6;
+          --reason-bg:    #eef2ff;
+        }
+
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background: #04080f; margin: 0; padding: 0; }
+        body { margin: 0; padding: 0; background: var(--c-bg); }
         ::-webkit-scrollbar { width: 5px; height: 5px; }
-        ::-webkit-scrollbar-track { background: #080d18; }
-        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 3px; }
+        ::-webkit-scrollbar-track { background: var(--c-bg); }
+        ::-webkit-scrollbar-thumb { background: var(--c-border); border-radius: 3px; }
         textarea { outline: none; }
         select { outline: none; }
         button { outline: none; }
-        .hover-bright:hover { filter: brightness(1.2); }
+        .hover-bright:hover { filter: brightness(1.08); }
         @keyframes spin { to { transform: rotate(360deg); } }
         @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
         @keyframes fadeSlide { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
@@ -378,9 +457,9 @@ export default function AppV3() {
       {/* TOP NAV */}
       <nav style={{
         display: "flex", alignItems: "center", justifyContent: "space-between",
-        padding: "0 28px", height: 58, background: "#060b14",
-        borderBottom: "1px solid #0f172a", position: "sticky", top: 0, zIndex: 200,
-        backdropFilter: "blur(10px)"
+        padding: "0 28px", height: 58, background: "var(--c-nav)",
+        borderBottom: "1px solid var(--c-border)", position: "sticky", top: 0, zIndex: 200,
+        backdropFilter: "blur(10px)", boxShadow: dark ? "none" : "0 2px 12px #6366f122"
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <div style={{
@@ -390,20 +469,23 @@ export default function AppV3() {
             fontSize: 16, boxShadow: "0 0 16px #0ea5e944"
           }}>🛡</div>
           <div>
-            <div style={{ fontWeight: 800, fontSize: 15, letterSpacing: 0.3, fontFamily: "'DM Sans', sans-serif" }}>SafeGen AI</div>
-            <div style={{ fontSize: 9, color: "#334155", letterSpacing: 1.5, textTransform: "uppercase" }}>Guardrail System</div>
+            <div style={{ fontWeight: 800, fontSize: 15, letterSpacing: 0.3, fontFamily: "'DM Sans', sans-serif", color: "var(--c-text)" }}>SafeGen AI</div>
+            <div style={{ fontSize: 9, color: "var(--c-dimmer)", letterSpacing: 1.5, textTransform: "uppercase" }}>Adaptive Guardrail System</div>
           </div>
-          <div style={{ marginLeft: 8, padding: "3px 10px", borderRadius: 20, background: "#052e16", border: "1px solid #10b98144", fontSize: 10, color: "#10b981", fontWeight: 700 }}>
-            ● LIVE
+          <div style={{ marginLeft: 8, padding: "3px 10px", borderRadius: 20,
+            background: backendReady ? (dark ? "#052e16" : "#dcfce7") : (dark ? "#2d0614" : "#ffe4e6"),
+            border: `1px solid ${backendReady ? "#10b98144" : "#f43f5e44"}`,
+            fontSize: 10, color: backendReady ? "#10b981" : "#f43f5e", fontWeight: 700 }}>
+            {backendReady ? "● LIVE" : "● WAKING UP"}
           </div>
         </div>
 
-        <div style={{ display: "flex", gap: 4, background: "#080d18", borderRadius: 10, padding: 4, border: "1px solid #1e293b" }}>
+        <div style={{ display: "flex", gap: 4, background: "var(--c-input)", borderRadius: 10, padding: 4, border: "1px solid var(--c-border)" }}>
           {NAV_ITEMS.map(n => (
             <button key={n.id} onClick={() => setView(n.id)} style={{
               padding: "7px 18px", borderRadius: 7, border: "none", cursor: "pointer",
               background: view === n.id ? "linear-gradient(135deg, #0ea5e9, #6366f1)" : "transparent",
-              color: view === n.id ? "#fff" : "#475569", fontWeight: 600, fontSize: 12,
+              color: view === n.id ? "#fff" : "var(--c-faint)", fontWeight: 600, fontSize: 12,
               transition: "all 0.2s", display: "flex", alignItems: "center", gap: 6
             }}>
               <span>{n.icon}</span><span>{n.label}</span>
@@ -411,8 +493,18 @@ export default function AppV3() {
           ))}
         </div>
 
-        <div style={{ fontSize: 11, color: "#1e293b", fontFamily: "monospace" }}>
-          {new Date().toLocaleTimeString()}
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <div style={{ fontSize: 11, color: "var(--c-dimmer)", fontFamily: "monospace" }}>
+            {new Date().toLocaleTimeString()}
+          </div>
+          {/* THEME TOGGLE */}
+          <button onClick={() => setDark(d => !d)} title="Toggle theme" style={{
+            padding: "6px 12px", borderRadius: 8, border: "1px solid var(--c-border)",
+            background: "var(--c-input)", color: "var(--c-faint)", cursor: "pointer",
+            fontSize: 16, transition: "all 0.2s", lineHeight: 1
+          }}>
+            {dark ? "☀️" : "🌙"}
+          </button>
         </div>
       </nav>
 
@@ -424,7 +516,7 @@ export default function AppV3() {
           <div style={{ display: "flex", gap: 10, marginBottom: 20, flexWrap: "wrap" }}>
             <StatCard icon="🦠" label="Malware Types" value="16" color="#f43f5e" sub="MITRE ATT&CK aligned" />
             <StatCard icon="🔐" label="PII Categories" value="15" color="#f59e0b" sub="With anonymisation score" />
-            <StatCard icon="🎯" label="ML Accuracy" value="94%" color="#10b981" sub="1,521 training examples" />
+            <StatCard icon="🎯" label="ML Accuracy" value="94%" color="#10b981" sub="12,024 training examples" />
             <StatCard icon="⚙️" label="Configurations" value="9" color="#0ea5e9" sub="3 roles × 3 policies" />
             <StatCard icon="🛡️" label="Injection Rules" value="30" color="#8b5cf6" sub="Pattern-based override" />
             <StatCard icon="📊" label="Session Scans" value={history.length} color="#6366f1" sub="This session" />
@@ -436,23 +528,23 @@ export default function AppV3() {
             <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
 
               {/* INPUT CARD */}
-              <div style={{ background: "#060b14", border: "1px solid #0f172a", borderRadius: 16, padding: 22, boxShadow: "0 4px 24px #00000044" }}>
-                <div style={{ fontSize: 10, color: "#334155", letterSpacing: 2, textTransform: "uppercase", marginBottom: 14 }}>Input Analysis</div>
+              <div style={{ background: "var(--c-card)", border: "1px solid var(--c-border)", borderRadius: 16, padding: 22, boxShadow: "var(--card-shadow)" }}>
+                <div style={{ fontSize: 10, color: "var(--c-dimmer)", letterSpacing: 2, textTransform: "uppercase", marginBottom: 14 }}>Input Analysis</div>
 
                 {/* TABS */}
-                <div style={{ display: "flex", background: "#080d18", borderRadius: 10, padding: 3, marginBottom: 18, border: "1px solid #1e293b" }}>
+                <div style={{ display: "flex", background: "var(--c-input)", borderRadius: 10, padding: 3, marginBottom: 18, border: "1px solid var(--c-border)" }}>
                   {[["text","📝","Text"],["image","🖼️","Image"],["document","📄","Doc"]].map(([id,ic,lb]) => (
                     <button key={id} onClick={() => setTab(id)} style={{
                       flex:1, padding:"8px 0", borderRadius:8, border:"none", cursor:"pointer",
                       background: tab===id ? "linear-gradient(135deg,#0ea5e9,#6366f1)" : "transparent",
-                      color: tab===id ? "#fff" : "#334155", fontWeight:600, fontSize:12, transition:"all 0.2s"
+                      color: tab===id ? "#fff" : "var(--c-dimmer)", fontWeight:600, fontSize:12, transition:"all 0.2s"
                     }}>{ic} {lb}</button>
                   ))}
                 </div>
 
                 {tab === "text" && (
                   <>
-                    <div style={{ fontSize: 9, color: "#1e293b", letterSpacing: 2, textTransform: "uppercase", marginBottom: 8 }}>Quick Demo</div>
+                    <div style={{ fontSize: 9, color: "var(--c-dimmer)", letterSpacing: 2, textTransform: "uppercase", marginBottom: 8 }}>Quick Demo</div>
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6, marginBottom: 14 }}>
                       {QUICK_DEMOS.map(d => (
                         <button key={d.label} onClick={() => setText(d.text)} className="hover-bright" style={{
@@ -469,51 +561,51 @@ export default function AppV3() {
                     <textarea value={text} onChange={e => setText(e.target.value)}
                       placeholder="Enter prompt or text to analyze..."
                       style={{
-                        width: "100%", height: 110, background: "#080d18",
-                        border: "1px solid #1e293b", borderRadius: 10, padding: 14,
-                        color: "#e2e8f0", fontSize: 13, resize: "none",
+                        width: "100%", height: 110, background: "var(--c-input)",
+                        border: "1px solid var(--c-border)", borderRadius: 10, padding: 14,
+                        color: "var(--c-text)", fontSize: 13, resize: "none",
                         fontFamily: "'JetBrains Mono', monospace", lineHeight: 1.65,
                         transition: "border-color 0.2s"
                       }}
                       onFocus={e => e.target.style.borderColor = "#0ea5e9"}
-                      onBlur={e => e.target.style.borderColor = "#1e293b"}
+                      onBlur={e => e.target.style.borderColor = ""}
                     />
-                    {text && <div style={{ fontSize: 10, color: "#334155", marginTop: 4, textAlign: "right" }}>{text.length} chars</div>}
+                    {text && <div style={{ fontSize: 10, color: "var(--c-dimmer)", marginTop: 4, textAlign: "right" }}>{text.length} chars</div>}
                   </>
                 )}
 
                 {tab === "image" && (
                   <div onClick={() => imgRef.current.click()} style={{
-                    border: "2px dashed #1e293b", borderRadius: 12, padding: 36,
+                    border: "2px dashed var(--c-border)", borderRadius: 12, padding: 36,
                     textAlign: "center", cursor: "pointer", transition: "all 0.2s", minHeight: 160,
                     display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center"
                   }}
                     onMouseEnter={e => e.currentTarget.style.borderColor = "#0ea5e9"}
-                    onMouseLeave={e => e.currentTarget.style.borderColor = "#1e293b"}>
+                    onMouseLeave={e => e.currentTarget.style.borderColor = ""}>
                     <input ref={imgRef} type="file" accept="image/*" style={{ display: "none" }}
                       onChange={e => { const f = e.target.files[0]; setImgFile(f); setImgPrev(URL.createObjectURL(f)); }} />
                     {imgPrev
                       ? <img src={imgPrev} alt="" style={{ maxHeight: 120, borderRadius: 8, boxShadow: "0 4px 12px #00000066" }} />
-                      : <><div style={{ fontSize: 36 }}>🖼️</div><div style={{ color: "#334155", marginTop: 10, fontSize: 13 }}>Click to upload image</div><div style={{ fontSize: 10, color: "#1e293b", marginTop: 4 }}>JPEG, PNG, WebP</div></>}
+                      : <><div style={{ fontSize: 36 }}>🖼️</div><div style={{ color: "var(--c-dimmer)", marginTop: 10, fontSize: 13 }}>Click to upload image</div><div style={{ fontSize: 10, color: "var(--c-dimmer)", marginTop: 4 }}>JPEG, PNG, WebP</div></>}
                   </div>
                 )}
 
                 {tab === "document" && (
                   <div onClick={() => docRef.current.click()} style={{
-                    border: "2px dashed #1e293b", borderRadius: 12, padding: 36,
+                    border: "2px dashed var(--c-border)", borderRadius: 12, padding: 36,
                     textAlign: "center", cursor: "pointer", minHeight: 160,
                     display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
                     transition: "all 0.2s"
                   }}
                     onMouseEnter={e => e.currentTarget.style.borderColor = "#0ea5e9"}
-                    onMouseLeave={e => e.currentTarget.style.borderColor = "#1e293b"}>
+                    onMouseLeave={e => e.currentTarget.style.borderColor = ""}>
                     <input ref={docRef} type="file" accept=".pdf,.docx,.txt" style={{ display: "none" }}
                       onChange={e => setDocFile(e.target.files[0])} />
                     <div style={{ fontSize: 36 }}>📄</div>
-                    <div style={{ color: docFile ? "#0ea5e9" : "#334155", marginTop: 10, fontSize: 13, fontWeight: docFile ? 700 : 400 }}>
+                    <div style={{ color: docFile ? "#0ea5e9" : "var(--c-dimmer)", marginTop: 10, fontSize: 13, fontWeight: docFile ? 700 : 400 }}>
                       {docFile ? docFile.name : "Click to upload document"}
                     </div>
-                    <div style={{ fontSize: 10, color: "#1e293b", marginTop: 4 }}>PDF · DOCX · TXT</div>
+                    <div style={{ fontSize: 10, color: "var(--c-dimmer)", marginTop: 4 }}>PDF · DOCX · TXT</div>
                   </div>
                 )}
 
@@ -524,10 +616,10 @@ export default function AppV3() {
                     { label: "User Role", val: role, set: setRole, opts: [["student","🎓"],["general","👤"],["expert","🔬"]] }
                   ].map(ctrl => (
                     <div key={ctrl.label}>
-                      <div style={{ fontSize: 9, color: "#334155", marginBottom: 6, textTransform: "uppercase", letterSpacing: 1.5 }}>{ctrl.label}</div>
+                      <div style={{ fontSize: 9, color: "var(--c-dimmer)", marginBottom: 6, textTransform: "uppercase", letterSpacing: 1.5 }}>{ctrl.label}</div>
                       <select value={ctrl.val} onChange={e => ctrl.set(e.target.value)} style={{
-                        width: "100%", background: "#080d18", border: "1px solid #1e293b",
-                        borderRadius: 8, padding: "10px 12px", color: "#e2e8f0",
+                        width: "100%", background: "var(--c-input)", border: "1px solid var(--c-border)",
+                        borderRadius: 8, padding: "10px 12px", color: "var(--c-text)",
                         fontSize: 13, cursor: "pointer", fontFamily: "'DM Sans', sans-serif"
                       }}>
                         {ctrl.opts.map(([v, ic]) => <option key={v} value={v}>{ic} {v.charAt(0).toUpperCase()+v.slice(1)}</option>)}
@@ -538,8 +630,8 @@ export default function AppV3() {
 
                 <button onClick={analyze} disabled={loading} className="hover-bright" style={{
                   width: "100%", marginTop: 14, padding: "13px 0", borderRadius: 10, border: "none",
-                  background: loading ? "#1e293b" : "linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%)",
-                  color: loading ? "#475569" : "#fff", fontWeight: 800, fontSize: 14,
+                  background: loading ? "var(--c-active)" : "linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%)",
+                  color: loading ? "var(--c-faint)" : "#fff", fontWeight: 800, fontSize: 14,
                   cursor: loading ? "not-allowed" : "pointer", transition: "all 0.3s",
                   boxShadow: loading ? "none" : "0 4px 20px #0ea5e944",
                   letterSpacing: 0.5
@@ -549,12 +641,12 @@ export default function AppV3() {
               </div>
 
               {/* CONFIGURATION MATRIX */}
-              <div style={{ background: "#060b14", border: "1px solid #0f172a", borderRadius: 16, padding: 20 }}>
+              <div style={{ background: "var(--c-card)", border: "1px solid var(--c-border)", borderRadius: 16, padding: 20 }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: showMatrix ? 14 : 0 }}>
-                  <div style={{ fontSize: 10, color: "#334155", letterSpacing: 2, textTransform: "uppercase" }}>Policy Matrix</div>
+                  <div style={{ fontSize: 10, color: "var(--c-dimmer)", letterSpacing: 2, textTransform: "uppercase" }}>Policy Matrix</div>
                   <button onClick={() => setShowMatrix(s => !s)} style={{
-                    background: "none", border: "1px solid #1e293b", borderRadius: 6,
-                    color: "#475569", fontSize: 11, padding: "4px 10px", cursor: "pointer"
+                    background: "none", border: "1px solid var(--c-border)", borderRadius: 6,
+                    color: "var(--c-faint)", fontSize: 11, padding: "4px 10px", cursor: "pointer"
                   }}>{showMatrix ? "Hide" : "Show"}</button>
                 </div>
                 {showMatrix && <ConfigMatrix activeRole={role} activePolicy={policy} />}
@@ -562,8 +654,8 @@ export default function AppV3() {
 
               {/* SESSION HISTORY */}
               {history.length > 0 && (
-                <div style={{ background: "#060b14", border: "1px solid #0f172a", borderRadius: 16, padding: 20 }}>
-                  <div style={{ fontSize: 10, color: "#334155", letterSpacing: 2, textTransform: "uppercase", marginBottom: 12 }}>Session History</div>
+                <div style={{ background: "var(--c-card)", border: "1px solid var(--c-border)", borderRadius: 16, padding: 20 }}>
+                  <div style={{ fontSize: 10, color: "var(--c-dimmer)", letterSpacing: 2, textTransform: "uppercase", marginBottom: 12 }}>Session History</div>
                   <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                     {history.slice(0, 5).map((h, i) => {
                       const m = DECISION_META[h.decision] || DECISION_META.ALLOW;
@@ -571,16 +663,16 @@ export default function AppV3() {
                         <div key={i} onClick={() => { setResult(h); setActiveHistIdx(i); }} style={{
                           display: "flex", alignItems: "center", gap: 10, padding: "9px 12px",
                           borderRadius: 8, cursor: "pointer",
-                          background: activeHistIdx === i ? "#0f172a" : "transparent",
-                          border: `1px solid ${activeHistIdx === i ? "#1e293b" : "transparent"}`,
+                          background: activeHistIdx === i ? "var(--c-active)" : "transparent",
+                          border: `1px solid ${activeHistIdx === i ? "var(--c-border)" : "transparent"}`,
                           transition: "all 0.15s"
                         }}>
                           <span style={{ width: 8, height: 8, borderRadius: "50%", background: m.color, flexShrink: 0 }} />
-                          <span style={{ flex: 1, fontSize: 12, color: "#94a3b8", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                          <span style={{ flex: 1, fontSize: 12, color: "var(--c-muted)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                             {h.input_text?.slice(0, 35)}...
                           </span>
                           <span style={{ fontSize: 10, color: m.color, fontWeight: 700 }}>{h.decision}</span>
-                          <span style={{ fontSize: 10, color: "#1e293b", fontFamily: "monospace" }}>{h.ts?.toLocaleTimeString()}</span>
+                          <span style={{ fontSize: 10, color: "var(--c-dimmer)", fontFamily: "monospace" }}>{h.ts?.toLocaleTimeString()}</span>
                         </div>
                       );
                     })}
@@ -593,19 +685,19 @@ export default function AppV3() {
             <div ref={resultRef}>
               {!result && !loading && (
                 <div style={{
-                  background: "#060b14", border: "1px solid #0f172a", borderRadius: 16,
+                  background: "var(--c-card)", border: "1px solid var(--c-border)", borderRadius: 16,
                   height: 500, display: "flex", flexDirection: "column",
                   alignItems: "center", justifyContent: "center", gap: 14
                 }}>
                   <div style={{ fontSize: 56, opacity: 0.15 }}>🛡️</div>
-                  <div style={{ fontSize: 16, fontWeight: 700, color: "#1e293b" }}>Awaiting Input</div>
-                  <div style={{ fontSize: 12, color: "#1e293b" }}>Results and analysis will appear here</div>
+                  <div style={{ fontSize: 16, fontWeight: 700, color: "var(--c-dimmer)" }}>Awaiting Input</div>
+                  <div style={{ fontSize: 12, color: "var(--c-dimmer)" }}>Results and analysis will appear here</div>
                 </div>
               )}
 
               {loading && (
                 <div style={{
-                  background: "#060b14", border: "1px solid #0f172a", borderRadius: 16,
+                  background: "var(--c-card)", border: "1px solid var(--c-border)", borderRadius: 16,
                   height: 500, display: "flex", flexDirection: "column",
                   alignItems: "center", justifyContent: "center", gap: 20, position: "relative", overflow: "hidden"
                 }}>
@@ -614,10 +706,10 @@ export default function AppV3() {
                     background: "linear-gradient(90deg, transparent, #0ea5e9, transparent)",
                     animation: "scanline 1.5s linear infinite"
                   }} />
-                  <div style={{ width: 52, height: 52, border: "3px solid #1e293b", borderTop: "3px solid #0ea5e9", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+                  <div style={{ width: 52, height: 52, border: "3px solid var(--c-border)", borderTop: "3px solid #0ea5e9", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
                   <div style={{ textAlign: "center" }}>
                     <div style={{ color: "#0ea5e9", fontSize: 14, fontWeight: 700 }}>Analyzing Input</div>
-                    <div style={{ color: "#334155", fontSize: 12, marginTop: 4 }}>Running malware · PII · intent detection</div>
+                    <div style={{ color: "var(--c-dimmer)", fontSize: 12, marginTop: 4 }}>Running malware · PII · intent detection</div>
                   </div>
                 </div>
               )}
@@ -633,7 +725,7 @@ export default function AppV3() {
                   }}>
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 20 }}>
                       <div style={{ flex: 1 }}>
-                        <div style={{ fontSize: 10, color: "#475569", textTransform: "uppercase", letterSpacing: 2, marginBottom: 8 }}>Safety Decision</div>
+                        <div style={{ fontSize: 10, color: "var(--c-faint)", textTransform: "uppercase", letterSpacing: 2, marginBottom: 8 }}>Safety Decision</div>
                         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
                           <div style={{
                             width: 14, height: 14, borderRadius: "50%", background: dm?.color,
@@ -643,7 +735,7 @@ export default function AppV3() {
                             {result.decision}
                           </span>
                         </div>
-                        <div style={{ fontSize: 13, color: "#94a3b8", lineHeight: 1.5 }}>{result.decision_description}</div>
+                        <div style={{ fontSize: 13, color: "var(--c-muted)", lineHeight: 1.5 }}>{result.decision_description}</div>
                         <div style={{ display: "flex", gap: 8, marginTop: 12, flexWrap: "wrap" }}>
                           <Pill color="#0ea5e9">{role}</Pill>
                           <Pill color="#8b5cf6">{policy}</Pill>
@@ -659,13 +751,13 @@ export default function AppV3() {
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 14 }}>
 
                     {/* MALWARE */}
-                    <div style={{ background: "#060b14", border: "1px solid #1e293b", borderRadius: 14, padding: 18 }}>
-                      <div style={{ fontSize: 10, color: "#334155", textTransform: "uppercase", letterSpacing: 2, marginBottom: 12 }}>Malware Detection</div>
+                    <div style={{ background: "var(--c-card)", border: "1px solid var(--c-border)", borderRadius: 14, padding: 18 }}>
+                      <div style={{ fontSize: 10, color: "var(--c-dimmer)", textTransform: "uppercase", letterSpacing: 2, marginBottom: 12 }}>Malware Detection</div>
                       {result.malware_type && result.malware_type !== "None" ? (
                         <>
                           <div style={{ fontSize: 24, marginBottom: 8 }}>{MALWARE_ICONS[result.malware_type] || "🦠"}</div>
-                          <div style={{ fontWeight: 800, fontSize: 14, color: "#e2e8f0", marginBottom: 4 }}>{result.malware_type}</div>
-                          <div style={{ fontSize: 11, color: "#64748b", marginBottom: 10 }}>{result.malware_category}</div>
+                          <div style={{ fontWeight: 800, fontSize: 14, color: "var(--c-text)", marginBottom: 4 }}>{result.malware_type}</div>
+                          <div style={{ fontSize: 11, color: "var(--c-faint)", marginBottom: 10 }}>{result.malware_category}</div>
                           {result.severity && (
                             <span style={{
                               padding: "4px 10px", borderRadius: 6, fontSize: 11, fontWeight: 700,
@@ -674,7 +766,7 @@ export default function AppV3() {
                             }}>{result.severity}</span>
                           )}
                           {result.malware_description && (
-                            <div style={{ fontSize: 11, color: "#475569", marginTop: 10, lineHeight: 1.5 }}>{result.malware_description}</div>
+                            <div style={{ fontSize: 11, color: "var(--c-faint)", marginTop: 10, lineHeight: 1.5 }}>{result.malware_description}</div>
                           )}
                           <div style={{ marginTop: 12 }}>
                             <GlowBar label="Malware Score" value={sc.malware || 0} color="#f43f5e" />
@@ -684,26 +776,26 @@ export default function AppV3() {
                         <div style={{ textAlign: "center", padding: "20px 0" }}>
                           <div style={{ fontSize: 28 }}>✓</div>
                           <div style={{ color: "#10b981", fontSize: 13, fontWeight: 700, marginTop: 6 }}>No Malware</div>
-                          <div style={{ color: "#334155", fontSize: 11, marginTop: 4 }}>Score: {fmt(sc.malware || 0)}</div>
+                          <div style={{ color: "var(--c-dimmer)", fontSize: 11, marginTop: 4 }}>Score: {fmt(sc.malware || 0)}</div>
                         </div>
                       )}
                     </div>
 
                     {/* PII */}
-                    <div style={{ background: "#060b14", border: "1px solid #1e293b", borderRadius: 14, padding: 18 }}>
-                      <div style={{ fontSize: 10, color: "#334155", textTransform: "uppercase", letterSpacing: 2, marginBottom: 12 }}>Sensitive Data</div>
+                    <div style={{ background: "var(--c-card)", border: "1px solid var(--c-border)", borderRadius: 14, padding: 18 }}>
+                      <div style={{ fontSize: 10, color: "var(--c-dimmer)", textTransform: "uppercase", letterSpacing: 2, marginBottom: 12 }}>Sensitive Data</div>
                       {result.pii_count > 0 ? (
                         <>
                           <div style={{ fontSize: 32, fontWeight: 900, color: "#f59e0b", fontFamily: "'JetBrains Mono', monospace", lineHeight: 1 }}>
                             {Math.round(result.anonymisation_score || 0)}%
                           </div>
-                          <div style={{ fontSize: 11, color: "#64748b", marginBottom: 10 }}>Anonymisation Score</div>
-                          <div style={{ height: 6, background: "#0f172a", borderRadius: 3, marginBottom: 12, overflow: "hidden" }}>
+                          <div style={{ fontSize: 11, color: "var(--c-faint)", marginBottom: 10 }}>Anonymisation Score</div>
+                          <div style={{ height: 6, background: "var(--c-track)", borderRadius: 3, marginBottom: 12, overflow: "hidden" }}>
                             <div style={{ height: "100%", width: `${result.anonymisation_score || 0}%`, background: "linear-gradient(90deg,#f59e0b,#fbbf24)", borderRadius: 3, boxShadow: "0 0 8px #f59e0b66" }} />
                           </div>
                           <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
                             {(result.pii_types || []).map(t => (
-                              <span key={t} style={{ padding: "3px 8px", background: "#1a1400", border: "1px solid #f59e0b33", borderRadius: 4, fontSize: 10, color: "#f59e0b" }}>{t}</span>
+                              <span key={t} style={{ padding: "3px 8px", background: "var(--pii-tag-bg)", border: "1px solid var(--pii-tag-border)", borderRadius: 4, fontSize: 10, color: "#f59e0b" }}>{t}</span>
                             ))}
                           </div>
                           <div style={{ marginTop: 12 }}>
@@ -714,33 +806,33 @@ export default function AppV3() {
                         <div style={{ textAlign: "center", padding: "20px 0" }}>
                           <div style={{ fontSize: 28 }}>🔒</div>
                           <div style={{ color: "#10b981", fontSize: 13, fontWeight: 700, marginTop: 6 }}>No PII Found</div>
-                          <div style={{ color: "#334155", fontSize: 11, marginTop: 4 }}>Score: {fmt(sc.sensitive || 0)}</div>
+                          <div style={{ color: "var(--c-dimmer)", fontSize: 11, marginTop: 4 }}>Score: {fmt(sc.sensitive || 0)}</div>
                         </div>
                       )}
                     </div>
 
                     {/* INTENT */}
-                    <div style={{ background: "#060b14", border: "1px solid #1e293b", borderRadius: 14, padding: 18 }}>
-                      <div style={{ fontSize: 10, color: "#334155", textTransform: "uppercase", letterSpacing: 2, marginBottom: 12 }}>Intent Analysis</div>
+                    <div style={{ background: "var(--c-card)", border: "1px solid var(--c-border)", borderRadius: 14, padding: 18 }}>
+                      <div style={{ fontSize: 10, color: "var(--c-dimmer)", textTransform: "uppercase", letterSpacing: 2, marginBottom: 12 }}>Intent Analysis</div>
                       <div style={{ fontSize: 16, fontWeight: 800, color: "#8b5cf6", marginBottom: 4, textTransform: "capitalize" }}>
                         {result.intent_label || "benign"}
                       </div>
-                      <div style={{ fontSize: 11, color: "#64748b", marginBottom: 10 }}>{result.threat_category || "Safe Request"}</div>
+                      <div style={{ fontSize: 11, color: "var(--c-faint)", marginBottom: 10 }}>{result.threat_category || "Safe Request"}</div>
                       {result.intent_confidence !== undefined && (
                         <>
                           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
-                            <span style={{ fontSize: 11, color: "#475569" }}>Confidence</span>
+                            <span style={{ fontSize: 11, color: "var(--c-faint)" }}>Confidence</span>
                             <span style={{ fontSize: 12, color: "#8b5cf6", fontWeight: 700, fontFamily: "monospace" }}>
                               {Math.round((result.intent_confidence || 0) * 100)}%
                             </span>
                           </div>
-                          <div style={{ height: 6, background: "#0f172a", borderRadius: 3, marginBottom: 12, overflow: "hidden" }}>
+                          <div style={{ height: 6, background: "var(--c-track)", borderRadius: 3, marginBottom: 12, overflow: "hidden" }}>
                             <div style={{ height: "100%", width: `${(result.intent_confidence || 0) * 100}%`, background: "linear-gradient(90deg,#8b5cf6,#a78bfa)", borderRadius: 3 }} />
                           </div>
                         </>
                       )}
                       {result.injection_detected && (
-                        <div style={{ padding: "6px 10px", background: "#2d0614", border: "1px solid #f43f5e44", borderRadius: 6, fontSize: 11, color: "#f43f5e", marginBottom: 10 }}>
+                        <div style={{ padding: "6px 10px", background: "var(--inject-bg)", border: "1px solid #f43f5e44", borderRadius: 6, fontSize: 11, color: "#f43f5e", marginBottom: 10 }}>
                           ⚡ Injection pattern matched — BLOCK override
                         </div>
                       )}
@@ -752,29 +844,29 @@ export default function AppV3() {
 
                   {/* EXPLANATION + RESPONSE */}
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
-                    <div style={{ background: "#060b14", border: "1px solid #1e293b", borderRadius: 14, padding: 18 }}>
-                      <div style={{ fontSize: 10, color: "#334155", textTransform: "uppercase", letterSpacing: 2, marginBottom: 12 }}>Decision Reasoning</div>
+                    <div style={{ background: "var(--c-card)", border: "1px solid var(--c-border)", borderRadius: 14, padding: 18 }}>
+                      <div style={{ fontSize: 10, color: "var(--c-dimmer)", textTransform: "uppercase", letterSpacing: 2, marginBottom: 12 }}>Decision Reasoning</div>
                       {(result.explanation || []).map((e, i) => (
                         <div key={i} style={{ display: "flex", gap: 8, marginBottom: 8, alignItems: "flex-start" }}>
                           <span style={{ color: "#0ea5e9", fontSize: 10, marginTop: 3, flexShrink: 0 }}>▸</span>
-                          <span style={{ fontSize: 12, color: "#94a3b8", lineHeight: 1.6 }}>{e}</span>
+                          <span style={{ fontSize: 12, color: "var(--c-muted)", lineHeight: 1.6 }}>{e}</span>
                         </div>
                       ))}
-                      <div style={{ marginTop: 14, padding: "10px 14px", background: "#080d18", borderRadius: 8, border: "1px solid #1e293b" }}>
-                        <div style={{ fontSize: 10, color: "#334155", marginBottom: 6, textTransform: "uppercase", letterSpacing: 1 }}>Reason</div>
-                        <div style={{ fontSize: 12, color: "#64748b" }}>{result.decision_reason}</div>
+                      <div style={{ marginTop: 14, padding: "10px 14px", background: "var(--reason-bg)", borderRadius: 8, border: "1px solid var(--c-border)" }}>
+                        <div style={{ fontSize: 10, color: "var(--c-dimmer)", marginBottom: 6, textTransform: "uppercase", letterSpacing: 1 }}>Reason</div>
+                        <div style={{ fontSize: 12, color: "var(--c-faint)" }}>{result.decision_reason}</div>
                       </div>
                     </div>
 
-                    <div style={{ background: "#060b14", border: `1px solid ${dm?.color}22`, borderRadius: 14, padding: 18 }}>
-                      <div style={{ fontSize: 10, color: "#334155", textTransform: "uppercase", letterSpacing: 2, marginBottom: 12 }}>AI Response</div>
-                      <div style={{ fontSize: 13, color: "#cbd5e1", lineHeight: 1.75, whiteSpace: "pre-wrap" }}>{result.response}</div>
-                      <div style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid #1e293b" }}>
+                    <div style={{ background: "var(--c-card)", border: `1px solid ${dm?.color}22`, borderRadius: 14, padding: 18 }}>
+                      <div style={{ fontSize: 10, color: "var(--c-dimmer)", textTransform: "uppercase", letterSpacing: 2, marginBottom: 12 }}>AI Response</div>
+                      <div style={{ fontSize: 13, color: "var(--c-response)", lineHeight: 1.75, whiteSpace: "pre-wrap" }}>{result.response}</div>
+                      <div style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid var(--c-border)" }}>
                         {!feedbackSent ? (
                           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                            <span style={{ fontSize: 11, color: "#334155" }}>Correct decision?</span>
-                            <button onClick={() => sendFeedback(true)} style={{ padding: "5px 14px", borderRadius: 6, border: "1px solid #10b98133", background: "#052e16", color: "#10b981", cursor: "pointer", fontSize: 11, fontWeight: 700 }}>👍 Yes</button>
-                            <button onClick={() => sendFeedback(false)} style={{ padding: "5px 14px", borderRadius: 6, border: "1px solid #f43f5e33", background: "#2d0614", color: "#f43f5e", cursor: "pointer", fontSize: 11, fontWeight: 700 }}>👎 No</button>
+                            <span style={{ fontSize: 11, color: "var(--c-dimmer)" }}>Correct decision?</span>
+                            <button onClick={() => sendFeedback(true)} style={{ padding: "5px 14px", borderRadius: 6, border: "1px solid #10b98133", background: "var(--fb-yes-bg)", color: "#10b981", cursor: "pointer", fontSize: 11, fontWeight: 700 }}>👍 Yes</button>
+                            <button onClick={() => sendFeedback(false)} style={{ padding: "5px 14px", borderRadius: 6, border: "1px solid #f43f5e33", background: "var(--fb-no-bg)", color: "#f43f5e", cursor: "pointer", fontSize: 11, fontWeight: 700 }}>👎 No</button>
                           </div>
                         ) : (
                           <div style={{ fontSize: 12, color: feedbackVal ? "#10b981" : "#f43f5e" }}>
@@ -795,20 +887,20 @@ export default function AppV3() {
       {view === "compare" && (
         <div style={{ padding: "24px 28px", maxWidth: 1400, margin: "0 auto" }}>
           <div style={{ marginBottom: 20 }}>
-            <div style={{ fontSize: 18, fontWeight: 800, marginBottom: 6 }}>⚖️ Context Comparison Mode</div>
-            <div style={{ fontSize: 13, color: "#475569" }}>Submit the same input across 4 configurations simultaneously to demonstrate context-adaptive behaviour.</div>
+            <div style={{ fontSize: 18, fontWeight: 800, marginBottom: 6, color: "var(--c-text)" }}>⚖️ Context Comparison Mode</div>
+            <div style={{ fontSize: 13, color: "var(--c-faint)" }}>Submit the same input across 4 configurations simultaneously to demonstrate context-adaptive behaviour.</div>
           </div>
 
-          <div style={{ background: "#060b14", border: "1px solid #0f172a", borderRadius: 16, padding: 22, marginBottom: 20 }}>
+          <div style={{ background: "var(--c-card)", border: "1px solid var(--c-border)", borderRadius: 16, padding: 22, marginBottom: 20 }}>
             <textarea value={text} onChange={e => setText(e.target.value)}
               placeholder="Enter text to compare across configurations..."
               style={{
-                width: "100%", height: 90, background: "#080d18", border: "1px solid #1e293b",
-                borderRadius: 10, padding: 14, color: "#e2e8f0", fontSize: 13,
+                width: "100%", height: 90, background: "var(--c-input)", border: "1px solid var(--c-border)",
+                borderRadius: 10, padding: 14, color: "var(--c-text)", fontSize: 13,
                 fontFamily: "'JetBrains Mono', monospace", resize: "none", lineHeight: 1.6
               }}
               onFocus={e => e.target.style.borderColor = "#0ea5e9"}
-              onBlur={e => e.target.style.borderColor = "#1e293b"}
+              onBlur={e => e.target.style.borderColor = ""}
             />
             <div style={{ display: "flex", gap: 10, marginTop: 14, flexWrap: "wrap" }}>
               {QUICK_DEMOS.map(d => (
@@ -819,8 +911,8 @@ export default function AppV3() {
               ))}
               <button onClick={runCompare} disabled={comparing || !text.trim()} style={{
                 marginLeft: "auto", padding: "7px 24px", borderRadius: 7, border: "none",
-                background: comparing ? "#1e293b" : "linear-gradient(135deg,#0ea5e9,#6366f1)",
-                color: comparing ? "#475569" : "#fff", fontWeight: 700, fontSize: 13,
+                background: comparing ? "var(--c-active)" : "linear-gradient(135deg,#0ea5e9,#6366f1)",
+                color: comparing ? "var(--c-faint)" : "#fff", fontWeight: 700, fontSize: 13,
                 cursor: comparing || !text.trim() ? "not-allowed" : "pointer",
                 boxShadow: comparing ? "none" : "0 4px 16px #0ea5e933"
               }}>
@@ -845,21 +937,21 @@ export default function AppV3() {
                       </div>
                       <div style={{ fontSize: 24, fontWeight: 900, color: m.color, letterSpacing: 2, fontFamily: "monospace", marginBottom: 6 }}>{r.decision}</div>
                       <div style={{ fontSize: 28, fontWeight: 900, color: m.color, fontFamily: "monospace", marginBottom: 14 }}>
-                        {fmt(r.final_score)}<span style={{ fontSize: 12, color: "#475569" }}>/10</span>
+                        {fmt(r.final_score)}<span style={{ fontSize: 12, color: "var(--c-faint)" }}>/10</span>
                       </div>
                       <GlowBar label="Malware" value={r.score_contributions?.malware || 0} color="#f43f5e" />
                       <GlowBar label="PII" value={r.score_contributions?.sensitive || 0} color="#f59e0b" delay={100} />
                       <GlowBar label="Intent" value={r.score_contributions?.intent || 0} color="#8b5cf6" delay={200} />
-                      <div style={{ fontSize: 11, color: "#475569", marginTop: 12, lineHeight: 1.5 }}>{r.decision_reason}</div>
+                      <div style={{ fontSize: 11, color: "var(--c-faint)", marginTop: 12, lineHeight: 1.5 }}>{r.decision_reason}</div>
                     </div>
                   );
                 })}
               </div>
 
               {/* COMPARISON INSIGHT */}
-              <div style={{ background: "#060b14", border: "1px solid #1e293b", borderRadius: 14, padding: 20, marginTop: 14 }}>
-                <div style={{ fontSize: 10, color: "#334155", textTransform: "uppercase", letterSpacing: 2, marginBottom: 10 }}>Key Insight</div>
-                <div style={{ fontSize: 13, color: "#94a3b8", lineHeight: 1.7 }}>
+              <div style={{ background: "var(--c-card)", border: "1px solid var(--c-border)", borderRadius: 14, padding: 20, marginTop: 14 }}>
+                <div style={{ fontSize: 10, color: "var(--c-dimmer)", textTransform: "uppercase", letterSpacing: 2, marginBottom: 10 }}>Key Insight</div>
+                <div style={{ fontSize: 13, color: "var(--c-muted)", lineHeight: 1.7 }}>
                   The same input produced <strong style={{ color: "#0ea5e9" }}>{new Set(compareResults.map(r => r.decision)).size} different decision{new Set(compareResults.map(r => r.decision)).size > 1 ? "s" : ""}</strong> across {compareResults.length} configurations.
                   {" "}The tightest configuration (<strong style={{ color: "#f43f5e" }}>Student + Strict</strong>) produced the most restrictive outcome,
                   while the most permissive (<strong style={{ color: "#10b981" }}>Expert + Open</strong>) reflects the trust extended to verified professionals.
@@ -890,21 +982,21 @@ export default function AppV3() {
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginBottom: 20 }}>
 
             {/* DONUT CHART */}
-            <div style={{ background: "#060b14", border: "1px solid #0f172a", borderRadius: 16, padding: 24 }}>
-              <div style={{ fontSize: 10, color: "#334155", textTransform: "uppercase", letterSpacing: 2, marginBottom: 18 }}>Decision Distribution</div>
+            <div style={{ background: "var(--c-card)", border: "1px solid var(--c-border)", borderRadius: 16, padding: 24 }}>
+              <div style={{ fontSize: 10, color: "var(--c-dimmer)", textTransform: "uppercase", letterSpacing: 2, marginBottom: 18 }}>Decision Distribution</div>
               <DonutChart data={donutData} />
             </div>
 
             {/* THREAT TIMELINE */}
-            <div style={{ background: "#060b14", border: "1px solid #0f172a", borderRadius: 16, padding: 24 }}>
-              <div style={{ fontSize: 10, color: "#334155", textTransform: "uppercase", letterSpacing: 2, marginBottom: 6 }}>Risk Score Timeline</div>
-              <div style={{ fontSize: 11, color: "#1e293b", marginBottom: 18 }}>Last 20 analyses — hover for details</div>
+            <div style={{ background: "var(--c-card)", border: "1px solid var(--c-border)", borderRadius: 16, padding: 24 }}>
+              <div style={{ fontSize: 10, color: "var(--c-dimmer)", textTransform: "uppercase", letterSpacing: 2, marginBottom: 6 }}>Risk Score Timeline</div>
+              <div style={{ fontSize: 11, color: "var(--c-dimmer)", marginBottom: 18 }}>Last 20 analyses — hover for details</div>
               <ThreatTimeline logs={logs} />
               <div style={{ display: "flex", gap: 14, marginTop: 12 }}>
                 {Object.entries(DECISION_META).map(([k, v]) => (
                   <div key={k} style={{ display: "flex", alignItems: "center", gap: 5 }}>
                     <div style={{ width: 8, height: 8, borderRadius: 2, background: v.color }} />
-                    <span style={{ fontSize: 10, color: "#334155" }}>{k}</span>
+                    <span style={{ fontSize: 10, color: "var(--c-dimmer)" }}>{k}</span>
                   </div>
                 ))}
               </div>
@@ -912,17 +1004,17 @@ export default function AppV3() {
           </div>
 
           {/* LOGS TABLE */}
-          <div style={{ background: "#060b14", border: "1px solid #0f172a", borderRadius: 16, overflow: "hidden" }}>
-            <div style={{ padding: "16px 24px", borderBottom: "1px solid #1e293b", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <div style={{ fontWeight: 700, fontSize: 14 }}>Analysis History</div>
-              <button onClick={fetchDashboard} style={{ padding: "6px 14px", borderRadius: 6, border: "1px solid #1e293b", background: "#080d18", color: "#475569", cursor: "pointer", fontSize: 11 }}>↻ Refresh</button>
+          <div style={{ background: "var(--c-card)", border: "1px solid var(--c-border)", borderRadius: 16, overflow: "hidden" }}>
+            <div style={{ padding: "16px 24px", borderBottom: "1px solid var(--c-border)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div style={{ fontWeight: 700, fontSize: 14, color: "var(--c-text)" }}>Analysis History</div>
+              <button onClick={fetchDashboard} style={{ padding: "6px 14px", borderRadius: 6, border: "1px solid var(--c-border)", background: "var(--c-input)", color: "var(--c-faint)", cursor: "pointer", fontSize: 11 }}>↻ Refresh</button>
             </div>
             <div style={{ overflowX: "auto" }}>
               <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
                 <thead>
-                  <tr style={{ background: "#080d18" }}>
+                  <tr style={{ background: "var(--c-input)" }}>
                     {["Time","Input","Type","Role","Policy","Score","Decision","Threat","Risk","FB"].map(h => (
-                      <th key={h} style={{ padding:"10px 14px", textAlign:"left", color:"#334155", fontWeight:600, borderBottom:"1px solid #1e293b", whiteSpace:"nowrap", fontSize:10, textTransform:"uppercase", letterSpacing:1 }}>{h}</th>
+                      <th key={h} style={{ padding:"10px 14px", textAlign:"left", color:"var(--c-dimmer)", fontWeight:600, borderBottom:"1px solid var(--c-border)", whiteSpace:"nowrap", fontSize:10, textTransform:"uppercase", letterSpacing:1 }}>{h}</th>
                     ))}
                   </tr>
                 </thead>
@@ -930,35 +1022,35 @@ export default function AppV3() {
                   {logs.map((log, i) => {
                     const m = DECISION_META[log.decision] || DECISION_META.ALLOW;
                     return (
-                      <tr key={i} style={{ borderBottom: "1px solid #0f172a", background: i%2===0 ? "#04080f" : "#060b14", transition:"background 0.15s" }}
-                        onMouseEnter={e => e.currentTarget.style.background="#0a1020"}
-                        onMouseLeave={e => e.currentTarget.style.background = i%2===0?"#04080f":"#060b14"}>
-                        <td style={{ padding:"10px 14px", color:"#1e293b", whiteSpace:"nowrap", fontFamily:"monospace", fontSize:10 }}>{new Date(log.timestamp).toLocaleTimeString()}</td>
-                        <td style={{ padding:"10px 14px", color:"#64748b", maxWidth:180, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{log.input_text?.slice(0,45)}...</td>
-                        <td style={{ padding:"10px 14px", color:"#475569" }}>{log.input_type || "text"}</td>
-                        <td style={{ padding:"10px 14px", color:"#475569", textTransform:"capitalize" }}>{log.role}</td>
-                        <td style={{ padding:"10px 14px", color:"#475569", textTransform:"capitalize" }}>{log.policy}</td>
+                      <tr key={i} style={{ borderBottom: "1px solid var(--c-border)", background: i%2===0 ? "var(--c-rowA)" : "var(--c-rowB)", transition:"background 0.15s" }}
+                        onMouseEnter={e => e.currentTarget.style.background="var(--c-hover)"}
+                        onMouseLeave={e => e.currentTarget.style.background = i%2===0?"var(--c-rowA)":"var(--c-rowB)"}>
+                        <td style={{ padding:"10px 14px", color:"var(--c-dimmer)", whiteSpace:"nowrap", fontFamily:"monospace", fontSize:10 }}>{new Date(log.timestamp).toLocaleTimeString()}</td>
+                        <td style={{ padding:"10px 14px", color:"var(--c-faint)", maxWidth:180, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{log.input_text?.slice(0,45)}...</td>
+                        <td style={{ padding:"10px 14px", color:"var(--c-faint)" }}>{log.input_type || "text"}</td>
+                        <td style={{ padding:"10px 14px", color:"var(--c-faint)", textTransform:"capitalize" }}>{log.role}</td>
+                        <td style={{ padding:"10px 14px", color:"var(--c-faint)", textTransform:"capitalize" }}>{log.policy}</td>
                         <td style={{ padding:"10px 14px", color:"#f59e0b", fontFamily:"monospace", fontWeight:700 }}>{fmt(log.final_score)}</td>
                         <td style={{ padding:"10px 14px" }}>
                           <span style={{ color:m.color, fontWeight:700, fontSize:10, fontFamily:"monospace", background:m.bg, padding:"3px 8px", borderRadius:4, border:`1px solid ${m.color}33` }}>{log.decision}</span>
                         </td>
-                        <td style={{ padding:"10px 14px", color:"#475569", fontSize:11 }}>{log.malware_type || "—"}</td>
+                        <td style={{ padding:"10px 14px", color:"var(--c-faint)", fontSize:11 }}>{log.malware_type || "—"}</td>
                         <td style={{ padding:"10px 14px" }}>
                           {log.privacy_risk && log.privacy_risk !== "None" ? (
                             <span style={{ fontSize:10, color:"#f59e0b", fontWeight:600 }}>{log.privacy_risk}</span>
-                          ) : <span style={{ color:"#1e293b" }}>—</span>}
+                          ) : <span style={{ color:"var(--c-dimmer)" }}>—</span>}
                         </td>
                         <td style={{ padding:"10px 14px" }}>
                           {log.feedback_agreed===true ? <span style={{color:"#10b981",fontSize:14}}>✓</span>
                             : log.feedback_agreed===false ? <span style={{color:"#f43f5e",fontSize:14}}>✗</span>
-                            : <span style={{color:"#1e293b"}}>—</span>}
+                            : <span style={{color:"var(--c-dimmer)"}}>—</span>}
                         </td>
                       </tr>
                     );
                   })}
                 </tbody>
               </table>
-              {logs.length === 0 && <div style={{ textAlign:"center", padding:48, color:"#1e293b", fontSize:13 }}>No analysis logs yet — run some analyses first</div>}
+              {logs.length === 0 && <div style={{ textAlign:"center", padding:48, color:"var(--c-dimmer)", fontSize:13 }}>No analysis logs yet — run some analyses first</div>}
             </div>
           </div>
         </div>
