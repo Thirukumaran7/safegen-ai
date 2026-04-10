@@ -26,7 +26,7 @@ async def startup():
     print("SafeGen AI v2 backend started")
     print("Database initialized")
     import os
-    model_path = os.path.join("ml", "intent_model.pkl")
+    model_path = os.path.join(os.path.dirname(__file__), "ml", "intent_model.pkl")
     if not os.path.exists(model_path):
         print("Model not found. Training now...")
         import subprocess
