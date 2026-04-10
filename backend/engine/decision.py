@@ -27,13 +27,14 @@ def make_decision(
 
     thresholds = get_thresholds(policy, role)
 
-    if final_score <= thresholds["allow_max"]:
+    # Use strict less than so score equal to threshold triggers next level
+    if final_score < thresholds["allow_max"]:
         decision = "ALLOW"
         reason = f"Score {final_score} is within safe threshold of {thresholds['allow_max']}"
-    elif final_score <= thresholds["restrict_max"]:
+    elif final_score < thresholds["restrict_max"]:
         decision = "RESTRICT"
         reason = f"Score {final_score} exceeds allow threshold of {thresholds['allow_max']}"
-    elif final_score <= thresholds["redact_max"]:
+    elif final_score < thresholds["redact_max"]:
         decision = "REDACT"
         reason = f"Score {final_score} exceeds restrict threshold of {thresholds['restrict_max']}"
     else:
@@ -41,13 +42,9 @@ def make_decision(
         reason = f"Score {final_score} exceeds redact threshold of {thresholds['redact_max']}"
 
     # If sensitive data found, minimum decision is REDACT
-    if sensitive_data_found and decision == "ALLOW":
+    if sensitive_data_found and decision in ("ALLOW", "RESTRICT"):
         decision = "REDACT"
         reason = "Sensitive data detected in input"
-
-    if sensitive_data_found and decision == "RESTRICT":
-        decision = "REDACT"
-        reason = "Sensitive data detected, upgrading to REDACT"
 
     return {
         "decision": decision,

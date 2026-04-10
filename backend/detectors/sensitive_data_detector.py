@@ -7,7 +7,7 @@ SENSITIVE_PATTERNS = {
     "github_token":      (r'gh[pousr]_[a-zA-Z0-9]{10,}', 3.5),
     "generic_api_key":   (r'(api[_\-]?key|api[_\-]?token)\s*[=:]\s*[a-zA-Z0-9\-_]{8,}', 3.0),
     "email_address":     (r'[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}', 1.5),
-    "phone_number":      (r'(\+\d{1,3}[\s\-]?)?\(?\d{3}\)?[\s\-]?\d{3}[\s\-]?\d{4}', 1.5),
+    "phone_number":      (r'(\+\d{1,3}[\s\-]?)?\(?\d{3,5}\)?[\s\-]?\d{3,5}[\s\-]?\d{3,5}|\b\d{7,15}\b', 1.5),
     "credit_card":       (r'(?:\d{4}[\s\-]?){3}\d{4}', 3.0),
     "password_in_text":  (r'(password|passwd|pwd|pass)\s*[=:is]+\s*\S{4,}', 3.0),
     "ip_address":        (r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}', 1.0),
@@ -49,62 +49,48 @@ def get_privacy_risk(count: int) -> tuple:
             return level, message
     return "High", "Multiple critical data types detected"
 
-def get_anonymisation_score(found_count: int, total_patterns: int) -> int:
-    if found_count == 0:
-        return 100
-    masked_percentage = ((total_patterns - found_count) / total_patterns) * 100
-    return max(0, min(100, int(masked_percentage)))
-
-def mask_text(text: str) -> str:
-    masked = text
-    for name, (pattern, _) in SENSITIVE_PATTERNS.items():
-        masked = re.sub(
-            pattern,
-            f"[{name.upper()}_REDACTED]",
-            masked,
-            flags=re.IGNORECASE
-        )
-    return masked
-
-def build_pii_summary(found_types: list) -> str:
-    if not found_types:
-        return "No sensitive data detected"
-    friendly = [PII_FRIENDLY_NAMES.get(t, t) for t in found_types]
-    if len(friendly) == 1:
-        return f"{friendly[0]} detected and masked"
-    elif len(friendly) == 2:
-        return f"{friendly[0]} and {friendly[1]} detected and masked"
-    else:
-        return f"{', '.join(friendly[:-1])}, and {friendly[-1]} detected and masked"
-
 def detect_sensitive_data(text: str) -> dict:
-    found_types = []
-    raw_score = 0.0
+    types_found = []
     details = []
-    total_count = 0
+    total_score = 0.0
+    masked_text = text
 
-    for data_type, (pattern, weight) in SENSITIVE_PATTERNS.items():
+    for pii_type, (pattern, weight) in SENSITIVE_PATTERNS.items():
         matches = re.findall(pattern, text, re.IGNORECASE)
         if matches:
-            found_types.append(data_type)
-            raw_score += weight
-            total_count += len(matches)
-            details.append(f"{PII_FRIENDLY_NAMES.get(data_type, data_type)}: {len(matches)} instance(s) found")
+            types_found.append(pii_type)
+            total_score += weight
+            friendly = PII_FRIENDLY_NAMES.get(pii_type, pii_type)
+            details.append({
+                "type": pii_type,
+                "friendly_name": friendly,
+                "count": len(matches),
+                "weight": weight
+            })
+            # Mask matched content
+            masked_text = re.sub(pattern, f"[{friendly.upper().replace(' ', '_')}_REDACTED]", masked_text, flags=re.IGNORECASE)
 
-    normalised = min(10.0, (raw_score / 7.0) * 10.0)
-    privacy_risk, risk_message = get_privacy_risk(len(found_types))
-    anonymisation_score = get_anonymisation_score(len(found_types), len(SENSITIVE_PATTERNS))
-    pii_summary = build_pii_summary(found_types)
+    total_score = round(min(10.0, total_score), 2)
+    pii_count = len(types_found)
+    privacy_risk, risk_message = get_privacy_risk(pii_count)
+
+    # Anonymisation score: percentage of sensitive content masked
+    original_len = len(text)
+    masked_len = len(masked_text)
+    if pii_count > 0 and original_len > 0:
+        anon_score = round(min(100, (masked_len / original_len) * 100 * 0.5 + 50), 0)
+    else:
+        anon_score = 100
 
     return {
-        "score": round(normalised, 2),
-        "types_found": found_types,
-        "details": details,
-        "masked_text": mask_text(text),
-        "contains_sensitive": len(found_types) > 0,
-        "anonymisation_score": anonymisation_score,
-        "pii_count": total_count,
-        "privacy_risk": privacy_risk,
-        "risk_message": risk_message,
-        "pii_summary": pii_summary
+        "score":              total_score,
+        "types_found":        types_found,
+        "details":            details,
+        "masked_text":        masked_text,
+        "contains_sensitive": pii_count > 0,
+        "anonymisation_score": anon_score,
+        "pii_count":          pii_count,
+        "privacy_risk":       privacy_risk,
+        "risk_message":       risk_message,
+        "pii_summary":        risk_message if pii_count == 0 else f"{pii_count} sensitive data type(s) detected and masked"
     }
