@@ -57,37 +57,57 @@ class FeedbackRequest(BaseModel):
 
 def format_analysis_response(analysis: dict, response_text: str, log_id, policy: str, role: str, input_type: str = "text", filename: str = None) -> dict:
     result = {
-        "log_id":              log_id,
-        "decision":            analysis["decision"]["decision"],
-        "description":         analysis["decision"]["description"],
-        "reason":              analysis["decision"]["reason"],
-        "final_score":         analysis["scoring"]["final_score"],
+        # ── Core decision ──────────────────────────────────────────────────
+        "log_id":               log_id,
+        "decision":             analysis["decision"]["decision"],
+        "description":          analysis["decision"]["description"],
+        "decision_description": analysis["decision"]["description"],   # frontend alias
+        "reason":               analysis["decision"]["reason"],
+        "decision_reason":      analysis["decision"]["reason"],        # frontend alias
+
+        # ── Scores ─────────────────────────────────────────────────────────
+        "final_score":          analysis["scoring"]["final_score"],
         "scores": {
-            "malware":         analysis["malware"]["score"],
-            "sensitive":       analysis["sensitive"]["score"],
-            "intent":          analysis["intent"]["score"],
+            "malware":          analysis["malware"]["score"],
+            "sensitive":        analysis["sensitive"]["score"],
+            "intent":           analysis["intent"]["score"],
         },
-        "contributions":       analysis["scoring"]["contributions"],
-        "malware_type":        analysis["malware"]["malware_type"],
-        "malware_category":    analysis["malware"]["malware_category"],
-        "severity":            analysis["malware"]["severity"],
-        "malware_description": analysis["malware"]["description"],
-        "flags":               analysis["malware"]["flags"],
+        "contributions":        analysis["scoring"]["contributions"],
+        "score_contributions":  analysis["scoring"]["contributions"],  # frontend alias
+
+        # ── Malware ────────────────────────────────────────────────────────
+        "malware_type":         analysis["malware"]["malware_type"],
+        "malware_category":     analysis["malware"]["malware_category"],
+        "severity":             analysis["malware"]["severity"],
+        "malware_description":  analysis["malware"]["description"],
+        "flags":                analysis["malware"]["flags"],
+
+        # ── Sensitive data ─────────────────────────────────────────────────
         "sensitive_types_found": analysis["sensitive"]["types_found"],
-        "anonymisation_score": analysis["sensitive"]["anonymisation_score"],
-        "pii_count":           analysis["sensitive"]["pii_count"],
-        "privacy_risk":        analysis["sensitive"]["privacy_risk"],
-        "pii_summary":         analysis["sensitive"]["pii_summary"],
-        "intent_label":        analysis["intent"]["label"],
-        "threat_category":     analysis["intent"]["threat_category"],
-        "injection_detected":  analysis["intent"]["injection_detected"],
-        "injection_patterns":  analysis["intent"]["injection_patterns"],
-        "explanation":         analysis["explanation"],
-        "safe_response":       response_text,
-        "display_text":        analysis["display_text"],
-        "policy":              policy,
-        "role":                role,
-        "input_type":          input_type,
+        "pii_types":            analysis["sensitive"]["types_found"],  # frontend alias
+        "anonymisation_score":  analysis["sensitive"]["anonymisation_score"],
+        "pii_count":            analysis["sensitive"]["pii_count"],
+        "pii_detected":         analysis["sensitive"]["pii_count"] > 0,
+        "privacy_risk":         analysis["sensitive"]["privacy_risk"],
+        "pii_summary":          analysis["sensitive"]["pii_summary"],
+
+        # ── Intent ─────────────────────────────────────────────────────────
+        "intent_label":         str(analysis["intent"]["label"]),
+        "threat_category":      analysis["intent"]["threat_category"],
+        "intent_confidence":    analysis["intent"]["confidence"],
+        "injection_detected":   analysis["intent"]["injection_detected"],
+        "injection_patterns":   analysis["intent"]["injection_patterns"],
+
+        # ── Response ───────────────────────────────────────────────────────
+        "explanation":          analysis["explanation"],
+        "safe_response":        response_text,
+        "response":             response_text,                         # frontend alias
+        "display_text":         analysis["display_text"],
+
+        # ── Meta ───────────────────────────────────────────────────────────
+        "policy":               policy,
+        "role":                 role,
+        "input_type":           input_type,
     }
     if filename:
         result["filename"] = filename
