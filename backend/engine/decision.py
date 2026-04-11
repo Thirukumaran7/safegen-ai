@@ -27,7 +27,7 @@ def make_decision(
 
     thresholds = get_thresholds(policy, role)
 
-    # Use strict less than so score equal to threshold triggers next level
+    # Score-based decision — REDACT not used here, reserved for PII only
     if final_score < thresholds["allow_max"]:
         decision = "ALLOW"
         reason = f"Score {final_score} is within safe threshold of {thresholds['allow_max']}"
@@ -35,16 +35,20 @@ def make_decision(
         decision = "RESTRICT"
         reason = f"Score {final_score} exceeds allow threshold of {thresholds['allow_max']}"
     elif final_score < thresholds["redact_max"]:
-        decision = "REDACT"
-        reason = f"Score {final_score} exceeds restrict threshold of {thresholds['restrict_max']}"
+        decision = "RESTRICT"
+        reason = f"Score {final_score} exceeds restrict threshold of {thresholds['restrict_max']} — elevated restriction applied"
     else:
         decision = "BLOCK"
-        reason = f"Score {final_score} exceeds redact threshold of {thresholds['redact_max']}"
+        reason = f"Score {final_score} exceeds block threshold of {thresholds['redact_max']}"
 
-    # If sensitive data found, minimum decision is REDACT
-    if sensitive_data_found and decision in ("ALLOW", "RESTRICT"):
-        decision = "REDACT"
-        reason = "Sensitive data detected in input"
+    # PII override — REDACT only when sensitive data is actually found
+    if sensitive_data_found:
+        if decision == "ALLOW":
+            decision = "REDACT"
+            reason = "Sensitive data detected in input — content masked"
+        elif decision == "RESTRICT":
+            decision = "REDACT"
+            reason = "Sensitive data detected — upgrading to REDACT"
 
     return {
         "decision": decision,
