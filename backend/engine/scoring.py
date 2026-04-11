@@ -1,18 +1,18 @@
 ROLE_WEIGHTS = {
     "student": {
-        "malware":   0.45,
+        "malware":   0.20,
         "sensitive": 0.15,
-        "intent":    0.40,
+        "intent":    0.65,
     },
     "general": {
-        "malware":   0.35,
+        "malware":   0.15,
         "sensitive": 0.15,
-        "intent":    0.50,
+        "intent":    0.70,
     },
     "expert": {
-        "malware":   0.30,
+        "malware":   0.15,
         "sensitive": 0.20,
-        "intent":    0.50,
+        "intent":    0.65,
     }
 }
 
